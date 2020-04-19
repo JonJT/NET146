@@ -1,0 +1,90 @@
+!!!!Admin!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+enable
+conf t
+ip dhcp excluded-address 172.16.15.33
+ip dhcp pool LAN
+network 172.16.15.32 255.255.255.224
+default-router 172.16.15.33
+interface g0/0
+no shutdown
+interface g0/0.15
+encapsulation dot1Q 15
+ip address 172.16.15.17 255.255.255.240
+ip nat inside
+interface g0/0.30
+encapsulation dot1Q 30
+ip address 172.16.15.33 255.255.255.224
+ip nat inside
+interface g0/0.45
+encapsulation dot1Q 45 native
+ip address 172.16.15.1 255.255.255.248
+interface g0/0.60
+encapsulation dot1Q 60
+ip address 172.16.15.9 255.255.255.248
+router rip
+version 2
+no auto-summary
+passive-interface g0/0.15
+passive-interface g0/0.30
+passive-interface g0/0.45
+passive-interface g0/0.60
+passive-interface s0/1/0
+network 172.16.15.0
+ip nat pool TEST 209.165.200.225 209.165.200.226 netmask 255.255.255.252
+ip nat inside source list 1 pool TEST overload
+ip nat inside source static 172.16.15.18 209.165.200.227
+ip route 0.0.0.0 0.0.0.0 S0/1/0
+access-list 1 permit 172.16.15.0 0.0.0.255
+interface s0/0/0
+ip nat inside
+interface s0/0/1
+ip nat inside
+interface s0/1/0
+ip nat outside
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!Admin-SW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+enable
+config t
+interface vlan 60
+ip add 172.16.15.10 255.255.255.248
+no shutdown
+ip default-gateway 172.16.15.9
+vlan 15
+name Servers
+vlan 30
+name PCs
+vlan 45
+name Native
+vlan 60
+name Management
+interface range f0/1 - 10
+switchport mode access
+switchport access vlan 30
+interface f0/1
+switchport port-security
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation restrict
+interface range f0/11 - 20
+switchport mode access
+switchport access vlan 15
+interface g0/1
+switchport mode trunk
+switchport trunk native vlan 45
+interface range f0/21 - 24 , g0/2
+shutdown
+ip domain-name cisco.com
+crypto key gen rsa
+1024
+enable secret ciscoenpass
+user HQadmin password ciscoclass
+service password-encryption
+ip ssh version 2
+ip ssh auth 2
+ip ssh time 60
+line vty 0 15
+login local
+transport input ssh
+end
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!
