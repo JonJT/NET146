@@ -1,8 +1,50 @@
-!!!!S1!!!!!!!!!!!!!!!!!!!!!
+!!!! R1 !!!!
+
 enable
 config t
-hostname S1
-interface range fa0/1-24
+hostname R1
+line vty 0 15
+password cisco
+login
+exec-timeout 0 0
+line console 0
+password class
+banner motd #Authorized use only#
+interface g0/0/0
+ip add 172.16.0.1 255.255.255.0
+no shutdown
+interface g0/0/0.99
+description Management VLAN 99
+encapsulation dot1Q 99 native
+ip add 172.16.99.1 255.255.255.0
+interface g0/0/0.10
+description VLAN 10
+encapsulation dot1Q 10
+ip add 172.16.10.1 255.255.255.0
+interface g0/0/0.20
+description VLAN 20
+encapsulation dot1Q 20
+ip add 172.16.20.1 255.255.255.0
+interface g0/0/0.30
+description VLAN 30
+encapsulation dot1Q 30
+ip add 172.16.30.1 255.255.255.0
+interface g0/0/0.100
+description VLAN 100
+encapsulation dot1Q 100
+ip add 172.16.100.1 255.255.255.0
+interface g0/0/1
+ip add 94.48.64.1 255.255.255.248
+
+!!!! Core2 !!!!
+
+enable
+config t
+hostname Core2
+ip default-gateway 172.16.99.1
+interface range g1/0/1 - 24
+shutdown
+interface range g1/1/1 - 4
 shutdown
 line vty 0 5
 password cisco
@@ -11,65 +53,208 @@ exec-timeout 0 0
 line console 0
 password class
 banner motd #Authorized use only#
-int vlan 99
-ip add 172.17.99.11 255.255.255.0
-no shutdown
-exit
-ip default-gateway 172.17.99.1
+vtp mode transparent
+vtp domain ccna
+vtp password cisco
 vlan 99
-interface range fa0/1 - 0/3
+name Management VLAN 99
+vlan 10
+name VLAN10
+vlan 20
+name VLAN20
+vlan 30
+name VLAN30
+vlan 100
+name VLAN100
+interface range g1/0/22 - 24
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+interface range g1/0/1 - 3
+switchport trunk encapsulation dot1q
 switchport mode trunk
 switchport trunk native vlan 99
 no shutdown
 
+!!!! Core 1 !!!!
 
-! interface fa0/1
-! switchport mode trunk
-! switchport trunk
-! no shutdown
-! interface fa0/2
-! switchport mode trunk
-! switchport trunk
-! no shutdown
-! vtp mode server
-! vtp domain cisco
-! vtp password class
-! vtp version 2
-! vlan 10
-! name vlan 10
-! vlan 20
-! name vlan20
-! vlan 30
-! name vlan30
-
-
-!!!!!S2!!!!!!!!!!!!!!!!!!!!
 enable
 config t
-hostname S2
-interface fa0/1
+hostname Core1
+ip default-gateway 172.16.99.1
+interface range g1/0/1 - 24
+shutdown
+interface range g1/1/1 - 4
+shutdown
+line vty 0 5
+password cisco
+login
+exec-timeout 0 0
+line console 0
+password class
+banner motd #Authorized use only#
+vtp mode transparent
+vtp domain ccna
+vtp password cisco
+vlan 99
+name Management VLAN 99
+vlan 10
+name VLAN10
+vlan 20
+name VLAN20
+vlan 30
+name VLAN30
+vlan 100
+name VLAN100
+interface vlan 99
+ip address 172.16.99.3 255.255.255.0
+no shutdown
+interface range g1/0/23 - 24
+switchport trunk encapsulation dot1q
 switchport mode trunk
-switchport trunk
+switchport trunk native vlan 99
+no shutdown
+interface g1/0/20
+switchport mode access
+switchport access vlan 100
+no shutdown
+interface range g1/0/1 - 3
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 99
 no shutdown
 
+!!!! Access1 !!!!
 
-! vtp mode client
-! vtp domain cisco
-! vtp password class
-! vtp version 2
-
-
-!!!!!S3!!!!!!!!!!!!!!!!!!!!!
 enable
 config t
-hostname S3
-interface fa0/2
+hostname Access1
+ip default-gateway 172.16.99.1
+interface range g1/0/1 - 24
+shutdown
+interface range g1/1/1 - 4
+shutdown
+line vty 0 5
+password cisco
+login
+exec-timeout 0 0
+line console 0
+password class
+banner motd #Authorized use only#
+vtp mode transparent
+vtp domain ccna
+vtp password cisco
+vlan 99
+name Management
+vlan 10
+name VLAN10
+vlan 20
+name VLAN20
+vlan 30
+name VLAN30
+vlan 100
+name VLAN100
+interface vlan 99
+ip address 172.16.99.4 255.255.255.0
+no shutdown
+interface range g1/0/23 - 24
+switchport trunk encapsulation dot1q
 switchport mode trunk
-switchport trunk
+switchport trunk native vlan 99
+no shutdown
+interface range g1/0/1 - 3
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+interface g1/0/1
+switchport mode access
+switchport access vlan 10
 no shutdown
 
+!!!! Access2 !!!!
 
-! vtp mode client
-! vtp domain cisco
-! vtp password class
-! vtp version 2
+enable
+config t
+hostname Access2
+ip default-gateway 172.16.99.1
+interface range g1/0/1 - 24
+shutdown
+interface range g1/1/1 - 4
+shutdown
+line vty 0 5
+password cisco
+login
+exec-timeout 0 0
+line console 0
+password class
+banner motd #Authorized use only#
+vtp mode transparent
+vtp domain ccna
+vtp password cisco
+vlan 99
+name Management
+vlan 10
+name VLAN10
+vlan 20
+name VLAN20
+vlan 30
+name VLAN30
+vlan 100
+name VLAN100
+interface vlan 99
+ip address 172.16.99.5 255.255.255.0
+no shutdown
+interface range g1/0/23 - 24
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+interface g1/0/1
+switchport mode access
+switchport access vlan 20
+no shutdown
+
+!!!! Access3 !!!!
+
+enable
+config t
+hostname Access3
+ip default-gateway 172.16.99.1
+interface range g1/0/1 - 24
+shutdown
+interface range g1/1/1 - 4
+shutdown
+line vty 0 5
+password cisco
+login
+exec-timeout 0 0
+line console 0
+password class
+banner motd #Authorized use only#
+vtp mode transparent
+vtp domain ccna
+vtp password cisco
+vlan 99
+name Management
+vlan 10
+name VLAN10
+vlan 20
+name VLAN20
+vlan 30
+name VLAN30
+vlan 100
+name VLAN100
+interface vlan 99
+ip address 172.16.99.6 255.255.255.0
+no shutdown
+interface range g1/0/23 - 24
+switchport trunk encapsulation dot1q
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+interface g1/0/1
+switchport mode access
+switchport access vlan 30
+no shutdown
