@@ -1,0 +1,66 @@
+!!!! S1
+
+enable
+config t
+hostname S1
+interface range g0/1 - 2
+switchport mode trunk
+interface range f0/21 - 22
+switchport mode trunk
+shutdown
+channel-group 1 mode desirable
+no shutdown
+interface port-channel 1
+switchport mode trunk
+interface range g0/1 - 2
+shutdown
+channel-group 2 mode active
+no shutdown
+interface port-channel 2
+switchport mode trunk
+exit
+spanning-tree vlan 1 root primary
+spanning-tree vlan 1 priority 24576
+
+!!!! S2
+
+enable
+config t
+hostname S2
+interface range g0/1 - 2
+switchport mode trunk
+interface range f0/23 - 24
+switchport mode trunk
+interface range g0/1 - 2
+shutdown
+channel-group 2 mode active
+no shutdown
+interface port-channel 2
+switchport mode trunk
+interface range f0/23 - 24
+shutdown
+channel-group 3 mode passive
+no shutdown
+interface port-channel 3
+switchport mode trunk
+
+
+!!!! S3
+
+enable
+config t
+hostname S3
+interface range f0/21 - 24
+switchport mode trunk
+interface range f0/21 -22
+shutdown
+channel-group 1 mode desirable
+no shutdown
+interface port-channel 1
+switchport mode trunk
+interface range f0/23 - 24
+shutdown
+channel-group 3 mode active
+no shutdown
+interface port-channel 3
+switchport mode trunk

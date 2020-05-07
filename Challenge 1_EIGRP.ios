@@ -1,0 +1,105 @@
+!!!! HQ DHCP
+
+enable
+config t
+hostname HQ
+interface s0/0/0
+ip add 172.16.32.1 255.255.255.252
+no shutdown
+interface s0/0/1
+ip add 172.16.32.13 255.255.255.252
+no shutdown
+interface s0/1/0
+ip add 172.16.32.17 255.255.255.252
+no shutdown
+interface g0/1
+ip add 172.16.32.21 255.255.255.252
+no shutdown
+exit
+router eigrp 1
+no auto-summary
+network 172.16.32.0 0.0.0.3
+network 172.16.32.12 0.0.0.3
+network 172.16.32.16 0.0.0.3
+network 172.16.32.20 0.0.0.3
+
+!!!! BR2
+
+enable
+config t
+hostname BR2
+interface s0/0/1
+ip add 172.16.32.14 255.255.255.252
+no shutdown
+interface s0/0/0
+ip add 172.16.32.9 255.255.255.252
+no shutdown
+interface g0/0
+ip add 175.150.100.1 255.255.255.128
+no shutdown
+exit
+router eigrp 1
+no auto-summary
+network 172.16.32.12 0.0.0.3
+network 172.16.32.8 0.0.0.3
+network 175.150.100.0 0.0.0.127
+
+
+!!!! BR3
+
+enable
+config t
+hostname BR3
+interface s0/0/0
+ip add 172.16.32.2 255.255.255.252
+no shutdown
+interface s0/0/1
+ip add 172.16.32.5 255.255.255.252
+no shutdown
+exit
+router eigrp 1
+no auto-summary
+network 172.16.32.0 0.0.0.3
+network 172.16.32.4 0.0.0.3
+
+
+!!!! BR5
+
+enable
+config t
+hostname BR5
+interface s0/0/0
+ip add 172.16.32.10 255.255.255.252
+no shutdown
+interface s0/0/1
+ip add 172.16.32.6 255.255.255.252
+no shutdown
+interface g0/1
+ip add 175.150.200.1 255.255.255.128
+no shutdown
+exit
+no auto-summary
+network 172.16.32.4 0.0.0.3
+network 172.16.32.8 0.0.0.3
+network 175.150.200.0 0.0.0.127
+
+!!!! BR6
+
+enable
+config t
+hostname R6
+interface s0/0/1
+ip add 172.16.32.18 255.255.255.252
+no shutdown
+interface g0/0
+ip add 64.104.13.129 255.255.255.252
+exit
+router eigrp 1
+no auto-summary
+network 172.16.32.16 0.0.0.3
+network 64.104.13.130 0.0.0.3
+
+!!!! Server0 !!!!
+ip 64.104.13.130
+subnet 255.255.255.252
+gateway 64.104.13.129
