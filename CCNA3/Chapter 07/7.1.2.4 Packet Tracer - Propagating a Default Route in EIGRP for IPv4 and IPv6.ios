@@ -1,0 +1,16 @@
+!!!! IPv4-Edge
+
+enable
+config t
+ip route 0.0.0.0 0.0.0.0 Serial0/1/0
+router eigrp 1
+redistribute static
+
+
+!!!! IPv6-Edge
+
+enable
+config t
+ipv6 route ::/0 Serial0/1/0
+ipv6 router eigrp 1
+redistribute static

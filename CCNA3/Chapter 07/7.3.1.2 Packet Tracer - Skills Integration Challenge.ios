@@ -1,0 +1,98 @@
+!!!! R1
+
+enable
+config t
+router eigrp 1
+passive-interface default
+no passive-interface Serial0/0/0
+network 172.31.0.0
+interface s0/0/0
+ip hello-interval eigrp 1 10
+
+
+!!!! R2
+
+enable
+config t
+router eigrp 1
+passive-interface default
+no passive-interface Serial0/0/1
+network 10.0.0.0
+interface s0/0/1
+ip hello-interval eigrp 1 10
+
+
+!!!! IPv4-Edge
+
+enable
+config t
+router eigrp 1
+passive-interface default
+no passive-interface Serial0/0/0
+no passive-interface Serial0/0/1
+network 172.31.6.0 0.0.0.3
+network 10.10.8.0 0.0.0.3
+ip route 0.0.0.0 0.0.0.0 Serial0/1/0
+router eigrp 1
+redistribute static
+interface s0/0/0
+ip hello-interval eigrp 1 10
+interface s0/0/1
+ip hello-interval eigrp 1 10
+
+
+!!!! IPV6-Edge
+
+enable
+config t
+ipv6 unicast-routing
+ipv6 router eigrp 1
+eigrp router-id 1.1.1.1
+no shutdown
+interface Serial0/0/0
+ipv6 eigrp 1
+interface Serial0/0/1
+ipv6 eigrp 1
+ipv6 route ::/0 Serial0/1/0
+ipv6 router eigrp 1
+redistribute static
+
+
+!!!! R3
+
+enable
+config t
+ipv6 unicast-routing
+ipv6 router eigrp 1
+eigrp router-id 3.3.3.3
+no shutdown
+interface Loopback0
+ipv6 eigrp 1
+interface Loopback1
+ipv6 eigrp 1
+interface Loopback2
+ipv6 eigrp 1
+interface Loopback3
+ipv6 eigrp 1
+interface Serial0/0/0
+ipv6 eigrp 1
+
+
+!!!! R4
+
+enable
+config t
+ipv6 unicast-routing
+ipv6 router eigrp 1
+eigrp router-id 4.4.4.4
+no shutdown
+interface Loopback8
+ipv6 eigrp 1
+interface Loopback9
+ipv6 eigrp 1
+interface Loopback10
+ipv6 eigrp 1
+interface Loopback11
+ipv6 eigrp 1
+interface Serial0/0/1
+ipv6 eigrp 1
