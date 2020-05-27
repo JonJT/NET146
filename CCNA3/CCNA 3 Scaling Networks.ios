@@ -1,0 +1,199 @@
+! BAN-1
+
+enable
+config term
+hostname BAN-1
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+interface fa0/0
+no shutdown
+interface fa0/0.201
+encapsulation dot1q 201
+ip add 10.10.53.65 255.255.255.224
+interface fa0/0.202
+encapsulation dot1q 202
+ip add 10.10.52.1 255.255.255.128
+interface fa0/0.250
+encapsulation dot1q 250
+ip add 10.10.53.97 255.255.255.240
+interface fa0/0.299
+encapsulation dot1q 299 native
+ip add 10.10.53.129 255.255.255.248
+
+! BAN-LAN-1 PC
+! 10.10.53.94 255.255.255.224 10.10.53.65 8.8.8.8
+
+! BAN-LAN-2-PC
+! 10.10.52.126 255.255.255.128 10.10.52.1 8.8.8.8
+
+! BAN-LAN-SW-1
+
+enable
+config term
+hostname SW-1
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0 
+vtp mode transparent
+spanning-tree mode rapid-pvst
+int fa0/14
+switchport mode Access
+switchport Access vlan 201
+interface fa0/1
+switchport mode trunk
+switchport trunk native vlan 299
+
+vlan 201
+name BAN-LAN-1
+vlan 250 
+name BAN-MGMT
+vlan 299
+name BAN-Native
+
+! BAN-LAN-SW-2
+
+enable
+config term
+hostname SW-2
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0 
+vtp mode transparent
+spanning-tree mode rapid-pvst
+int fa0/11
+switchport mode Access
+switchport Access vlan 202
+
+vlan 202
+name BAN_LAN-2
+vlan 250 
+name BAN-MGMT
+vlan 299
+name BAN-Native
+
+! BAN-2
+
+enable
+config term
+hostname BAN-2
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+
+! BAN-3
+
+enable
+config term
+hostname BAN-3
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+
+! PHX-1
+
+enable
+config term
+hostname PHX-1
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+
+! PHX-2
+
+enable
+config term
+hostname PHX-2
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+
+! PHX-3
+
+enable
+config term
+hostname PHX-3
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password class
+login
+logging synchronous
+exec-timeout 0 0
+
