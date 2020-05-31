@@ -1,0 +1,44 @@
+!-----
+!RA
+!-----
+enable
+config t
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 1.1.1.1
+interface g0/0
+ipv6 ospf 1 area 1
+interface g0/1
+ipv6 ospf 1 area 1
+interface s0/0/0
+ipv6 ospf 1 area 0
+
+!-----
+!RB
+!-----
+enable
+config t
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 2.2.2.2
+interface g0/0
+ipv6 ospf 1 area 0
+interface s0/0/0
+ipv6 ospf 1 area 0
+interface s0/0/1
+ipv6 ospf 1 area 0
+
+!-----
+!RC
+!-----
+enable
+config t
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 3.3.3.3
+interface g0/0
+ipv6 ospf 1 area 2
+interface g0/1
+ipv6 ospf 1 area 2
+interface s0/0/1
+ipv6 ospf 1 area 0

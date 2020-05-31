@@ -1,0 +1,42 @@
+!-----
+!RA
+!-----
+enable
+config t
+interface g0/0
+ip ospf hello-interval 5
+ip ospf dead-interval 20
+ip ospf priority 150
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+end
+
+!-----
+!RB
+!-----
+enable
+config t
+interface g0/0
+ip ospf hello-interval 5
+ip ospf dead-interval 20
+ip ospf priority 100
+router ospf 1
+network 192.168.1.0 0.0.0.255 area 0
+end
+
+!-----
+!RC
+!-----
+enable
+config t
+interface g0/0
+ip ospf hello-interval 5
+ip ospf dead-interval 20
+ip ospf priority 50
+router ospf 1
+passive-interface default
+no passive-interface g0/0
+network 192.168.1.0 0.0.0.255 area 0
+default-information originate
+ip route 0.0.0.0 0.0.0.0 s0/0/0
+end

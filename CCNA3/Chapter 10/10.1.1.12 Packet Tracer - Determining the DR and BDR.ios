@@ -1,0 +1,23 @@
+!-----
+!RA
+!-----
+enable
+config t
+interface g0/0
+ip ospf priority 200
+
+!-----
+!RB
+!-----
+enable
+config t
+interface g0/0
+ip ospf priority 100
+
+!-----
+!RC
+!-----
+enable
+config t
+interface g0/0
+ip ospf priority 1
