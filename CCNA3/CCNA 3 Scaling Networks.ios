@@ -1,4 +1,6 @@
+!-----
 ! BAN-1
+!-----
 
 enable
 config term
@@ -31,14 +33,20 @@ interface fa0/0.299
 encapsulation dot1q 299 native
 ip add 10.10.53.129 255.255.255.248
 
+!-----
 ! BAN-LAN-1 PC
-! 10.10.53.94 255.255.255.224 10.10.53.65 8.8.8.8
+!-----
+10.10.53.94 255.255.255.224 10.10.53.65 8.8.8.8
 
+
+!-----
 ! BAN-LAN-2-PC
-! 10.10.52.126 255.255.255.128 10.10.52.1 8.8.8.8
+!-----
+10.10.52.126 255.255.255.128 10.10.52.1 8.8.8.8
 
+!-----
 ! BAN-LAN-SW-1
-
+!-----
 enable
 config term
 hostname SW-1
@@ -71,7 +79,9 @@ name BAN-MGMT
 vlan 299
 name BAN-Native
 
+!-----
 ! BAN-LAN-SW-2
+!-----
 
 enable
 config term
@@ -102,7 +112,9 @@ name BAN-MGMT
 vlan 299
 name BAN-Native
 
+!-----
 ! BAN-2
+!-----
 
 enable
 config term
@@ -121,7 +133,9 @@ login
 logging synchronous
 exec-timeout 0 0
 
+!-----
 ! BAN-3
+!-----
 
 enable
 config term
@@ -140,7 +154,9 @@ login
 logging synchronous
 exec-timeout 0 0
 
+!-----
 ! PHX-1
+!-----
 
 enable
 config term
@@ -159,7 +175,9 @@ login
 logging synchronous
 exec-timeout 0 0
 
+!-----
 ! PHX-2
+!-----
 
 enable
 config term
@@ -178,7 +196,9 @@ login
 logging synchronous
 exec-timeout 0 0
 
+!-----
 ! PHX-3
+!-----
 
 enable
 config term
