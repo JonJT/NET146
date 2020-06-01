@@ -1,0 +1,27 @@
+enable
+config term
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0 
+vtp mode transparent
+spanning-tree mode rapid-pvst
+hostname 
+
+vlan 201
+name BAN-LAN-1
+vlan 202
+name BAN_LAN-2
+vlan 250 
+name BAN-MGMT
+vlan 299
+name BAN-Native

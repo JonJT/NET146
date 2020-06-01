@@ -1,0 +1,18 @@
+enable
+config term
+no ip domain-lookup
+banner motd #Unauthorized Access is Prohibited#
+enable secret class
+line console 0
+password cisco
+login
+loggin synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0 
+hostname 
+
+
