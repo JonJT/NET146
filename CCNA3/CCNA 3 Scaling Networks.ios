@@ -1,7 +1,6 @@
 !-----
 ! BAN-1
 !-----
-
 enable
 config term
 hostname BAN-1
@@ -82,7 +81,6 @@ name BAN-Native
 !-----
 ! BAN-LAN-SW-2
 !-----
-
 enable
 config term
 hostname SW-2
@@ -115,7 +113,6 @@ name BAN-Native
 !-----
 ! BAN-2
 !-----
-
 enable
 config term
 hostname BAN-2
@@ -136,7 +133,6 @@ exec-timeout 0 0
 !-----
 ! BAN-3
 !-----
-
 enable
 config term
 hostname BAN-3
@@ -157,7 +153,6 @@ exec-timeout 0 0
 !-----
 ! PHX-1
 !-----
-
 enable
 config term
 hostname PHX-1
@@ -178,7 +173,6 @@ exec-timeout 0 0
 !-----
 ! PHX-2
 !-----
-
 enable
 config term
 hostname PHX-2
@@ -199,7 +193,6 @@ exec-timeout 0 0
 !-----
 ! PHX-3
 !-----
-
 enable
 config term
 hostname PHX-3
