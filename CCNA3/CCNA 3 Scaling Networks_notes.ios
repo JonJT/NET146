@@ -1,0 +1,596 @@
+!-----
+! BAN-1
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname BAN-1
+!
+int f0/0
+no shutdown
+description trunk
+int f0/0.201
+encapsulation dot1q 201
+ip address 10.10.53.65 255.255.255.224
+!
+int f0/0.202
+encapsulation dot1q 202
+ip address 10.10.52.1 255.255.255.128
+!
+int f0/0.250
+encapsulation dot1q 250
+ip address 10.10.53.97 255.255.255.240
+!
+int f0/0.299
+encapsulation dot1q 299 native
+int s0/0/0
+clock rate 1300000
+ip address 10.10.53.121 255.255.255.252
+bandwidth 1544
+description WAN
+no shutdown
+!
+int s0/0/1
+ip address 10.10.53.114 255.255.255.252
+bandwidth 128
+description WAN
+no shutdown
+!
+router eigrp 100
+no auto-summary
+network 10.10.52.0 0.0.0.127
+network 10.10.53.64 0.0.0.31
+network 10.10.53.94 0.0.0.15
+network 10.10.53.112 0.0.0.3
+network 10.10.53.120 0.0.0.3
+passive-interface fa0/0.202
+passive-interface fa0/0.201
+passive-interface fa0/0.250
+
+
+!-----
+! BAN-2
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname BAN-2
+!
+int fa0/0
+description LAN
+ip address 10.10.52.129 255.255.255.128
+no shutdown
+!
+int s0/0/0
+ip address 10.10.53.118 255.255.255.252
+description WAN
+bandwidth 1544
+no shutdown
+!
+int s0/0/1
+clock rate 128000
+ip address 10.10.53.113 255.255.255.252
+bandwidth 128
+no shutdown
+!
+ip domain-name cisco.com
+username admin password cisco
+crypto key generate rsa
+1024
+line vty 0 15
+transport input ssh
+login local
+!
+exit
+ip dhcp excluded-address 10.10.52.143
+ip dhcp pool BAN-LAN-3
+network 10.10.52.128 255.255.255.128
+default-router 10.10.52.129
+dns-server 8.8.8.8
+!
+router eigrp 100
+no auto-summary
+network 10.10.52.128 0.0.0.128
+network 10.10.53.112 0.0.0.3
+network 10.10.53.116 0.0.0.3
+passive-interface fa0/0
+
+
+!-----
+! BAN-3
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname BAN-3
+!
+int fa0/1
+description LAN
+ip address 10.10.53.1 255.255.255.192
+no shutdown
+int s0/1/0
+description WAN
+ip address 10.10.53.122 255.255.255.252
+bandwidth 1544
+no shutdown
+!
+int s0/1/1
+clock rate 1300000
+ip address 10.10.53.117 255.255.255.252
+description WAN
+bandwidth 1544
+no shutdown
+!
+int s0/0/1
+ip address 209.165.200.194 255.255.255.252
+description WAN
+no shutdown
+!
+int s0/0/1
+ipv6 address 2001:acad:5678:1::3/64
+bandwidth 1544
+description WAN
+!
+int s0/0/0
+clock rate 1300000
+ipv6 address 2001:acad:5678:50::3/64
+bandwidth 1544
+description WAN
+no shutdown
+!
+exit
+ipv6 unicast-routing
+!
+router eigrp 100
+no auto-summary
+network 10.10.53.0 0.0.0.63
+network 10.10.53.116 0.0.0.3
+network 10.10.53.120 0.0.0.3
+passive-interface fa0/1
+passive-interface s0/0/1
+!
+redistribute static
+exit
+ip route 0.0.0.0 0.0.0.0 s0/0/1
+!
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 1.3.3.3
+passive-interface fa0/1
+passive-interface s0/0/1
+!
+int s0/0/0
+ipv6 address fe80::3 link-local
+ipv6 ospf 1 area 0
+exit
+!
+ipv6 route ::/0 s0/0/1
+ipv6 router ospf 1
+default-information originate
+!
+ip access-list standard NAT-EM
+permit 10.10.52.0 0.0.1.255
+deny any
+exit
+!
+ip nat inside source list NAT-EM interface s0/0/1 overload
+int s0/0/1
+ip nat outside
+int s0/1/1
+ip nat inside
+int s0/1/0
+ip nat inside
+int f0/1
+ip nat inside
+
+
+
+!-----
+! BAN-SW-1
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+vtp mode transparent
+spanning-tree mode rapid-pvst
+hostname BAN-SW1
+vlan 201
+name BAN-LAN-1
+vlan 201
+name BAN-LAN-2
+vlan 250
+name BAN-MGMT
+vlan 299
+name BAN-Native
+!
+int vlan 250
+ip address 10.10.53.98 255.255.255.240
+no shutdown
+exit
+ip default-gateway 10.10.53.97
+!
+int range f0/1, g0/1-2
+switchport mode trunk
+switchport trunk native vlan 299
+!
+int f0/14
+switchport mode access
+switchport access vlan 201
+!
+int range g0/1-2
+channel-group 5 mode active
+int port-channel 5
+switchport mode trunk
+switchport trunk native vlan 299
+!
+int f0/14
+switchport port-security maximum 15
+switchport port-security violation protect
+switchport port-security mac-address 0090.0C4A.A01D
+spanning-tree portfast
+spanning-tree bpduguard enable
+!
+int vlan 250
+description LAN
+
+
+!-----
+! BAN-SW-2
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+vtp mode transparent
+spanning-tree mode rapid-pvst
+hostname BAN-SW2
+vlan 201
+name BAN-LAN-1
+vlan 201
+name BAN-LAN-2
+vlan 250
+name BAN-MGMT
+vlan 299
+name BAN-Native
+!
+int vlan 250
+ip address 10.10.53.99 255.255.255.240
+no shutdown
+exit
+ip default-gateway 10.10.53.97
+!
+int range g0/1-2
+switchport mode trunk
+switchport trunk native vlan 299
+!
+int f0/11
+switchport mode access
+switchport access vlan 202
+!
+int range g0/1-2
+channel-group 5 mode active
+int port-channel 5
+switchport mode trunk
+switchport trunk native vlan 299
+int f0/11
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+!
+spanning-tree vlan 202 root primary
+!
+int vlan 250
+description LAN
+
+
+!-----
+! BAN-LAN-1
+!-----
+10.10.53.74
+255.255.255.224
+10.10.53.65
+8.8.8.8
+
+!-----
+! BAN-LAN-2
+!-----
+10.10.52.10
+255.255.255.128
+10.10.52.1
+8.8.8.8
+
+!-----
+! BAN-LAN-3
+!-----
+10.10.52.138
+255.255.255.128
+10.10.52.129
+8.8.8.8
+
+!-----
+! PHX-1
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname PHX-1
+!
+int s0/1/0
+ipv6 address 2001:acad:5678:50::1/64
+bandwidth 1544
+description WAN
+no shutdown
+!
+int s0/0/0
+ipv6 address 2001:acad:5678:12::1/64
+bandwidth 128
+description WAN
+no shutdown
+!
+int s0/0/1
+ipv6 address 2001:acad:5678:13::1/64
+bandwidth 1544
+description WAN
+no shutdown
+!
+exit
+ipv6 unicast-routing
+!
+ipv6 unicast-routing
+ipv6 router ospf 55
+router-id 55.1.1.1
+exit
+!
+int s0/0/0
+ipv6 address fe80::201 link-local
+ipv6 ospf 55 area 20
+!
+int s0/0/1
+ipv6 address fe80::201 link-local
+ipv6 ospf 55 area 20
+!
+int s0/1/0
+ipv6 address fe80::201 link-local
+ipv6 ospf 55 area 0
+!
+exit
+!
+ipv6 route ::/0 s0/1/0
+ipv6 router ospf 55
+default-information originate
+
+
+
+!-----
+! PHX-2
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname PHX-2
+!
+int fa0/0
+ipv6 address 2001:acad:5678:201::1/64
+description LAN
+no shutdown
+!
+int fa0/1
+ipv6 address 2001:acad:5678:202::1/64
+description LAN
+no shutdown
+!
+int s0/0/0
+ipv6 address 2001:acad:5678:23::2/64
+bandwidth 1000
+description WAN
+no shutdown
+!
+int s0/0/1
+clock rate 128000
+ipv6 address 2001:acad:5678:12::2/64
+description WAN
+bandwidth 128
+no shutdown
+!
+ipv6 unicast-routing
+ipv6 router ospf 55
+router-id 55.2.2.2
+passive-interface fa0/0
+passive-interface fa0/1
+exit
+int f0/0
+ipv6 address fe80::202 link-local
+ipv6 ospf 55 area 20
+!
+int fa0/1
+ipv6 address fe80::202 link-local
+ipv6 ospf 55 area 20
+!
+int s0/0/0
+ipv6 address fe80::202 link-local
+ipv6 ospf 55 area 20
+!
+int s0/0/1
+ipv6 address fe80::202 link-local
+ipv6 ospf 55 area 20
+
+
+
+!-----
+! PHX-3
+!-----
+enable
+config term
+no ip domain-lookup
+banner motd $Unauthorized Access is Prohibited!$
+enable secret class
+line console 0
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+line vty 0 15
+password cisco
+login
+logging synchronous
+exec-timeout 0 0
+hostname PHX-3
+!
+int fa0/0
+ipv6 address 2001:acad:5678:203::1/64
+description LAN
+no shutdown
+!
+int fa0/1
+ipv6 address 2001:acad:5678:204::1/64
+description LAN
+no shutdown
+!
+int s0/0/0
+clock rate 1000000
+ipv6 address 2001:acad:5678:23::3/64
+bandwidth 1000
+description WAN
+no shutdown
+!
+int s0/0/1
+clock rate 1300000
+ipv6 address 2001:acad:5678:13::3/64
+bandwidth 1544
+description WAN
+no shutdown
+!
+ipv6 unicast-routing
+ipv6 router ospf 55
+router-id 55.3.3.3
+passive-interface fa0/0
+passive-interface fa0/1
+exit
+!
+int fa0/0
+ipv6 address fe80::203 link-local
+ipv6 ospf 55 area 20
+!
+int fa0/1
+ipv6 address fe80::203 link-local
+ipv6 ospf 55 area 20
+!
+int s0/0/0
+ipv6 address fe80::203 link-local
+ipv6 ospf 55 area 20
+!
+int s0/0/1
+ipv6 address fe80::203 link-local
+ipv6 ospf 55 area 20
+
+
+!-----
+! PHX-LAN-1
+!-----
+2001:ACAD:5678:201::5 / 64
+2001:ACAD:5678:201::1
+2001:ACAD:5678:13::1
+
+!-----
+! PHX-LAN-2
+!-----
+2001:ACAD:5678:202::5 / 64
+2001:ACAD:5678:202::1
+2001:ACAD:5678:13::1
+
+!-----
+! PHX-LAN-3
+!-----
+2001:ACAD:5678:203::5 / 64
+2001:ACAD:5678:203::1
+2001:ACAD:5678:13::1
+
+!-----
+! PHX-LAN-4
+!-----
+2001:ACAD:5678:204::5 / 64
+2001:ACAD:5678:204::1
+2001:ACAD:5678:13::1
